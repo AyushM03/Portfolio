@@ -19,7 +19,7 @@ export function SelfServise() {
           <span className="text-[#FFBB00] font-bold">do.</span>
           <span className="text-[25px] mt-5 font-light rounded-sm text-slate-300 grid grid-cols-1 lg:grid-cols-2 gap-2 ">
           A full stack developer with a passion for creative problem-solving.
-            Whether it's building robust web applications or designing visually
+            Whether it is building robust web applications or designing visually
             compelling graphics, I bring a creative approach to tackling
             real-world challenges. My work blends technical expertise with a
             keen eye for design, ensuring solutions that are both functional and
