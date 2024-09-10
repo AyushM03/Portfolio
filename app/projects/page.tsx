@@ -50,6 +50,7 @@ export default async function ProjectsPage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {item.tags.map((tagItem, index) => (
                   <span
+                  key={index}
                     className="inline-flex items-center rounded-md bg-primary/10 px-3 
                          py-1.5 text-xs sm:text-sm font-medium text-primary ring-2 ring-inset ring-primary/20"
                   >

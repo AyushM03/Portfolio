@@ -7,6 +7,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Form } from "../components/Form";
 import prisma from "../lib/db";
 import { promises } from "dns";
+import Image from "next/image";
 
 import React, { Suspense } from "react";
 import { GuestBookFormLoading, LoadingMessages } from "../components/LoadingState";
@@ -61,7 +62,7 @@ async function GuestBookEntries() {
 return data.map((item)=>(
   <li key={item.id}>
     <div className="flex items-center">
-      <img src={item.User?.profileimage as string} alt="user profile image"  className="w-10 h-10 rounded-lg"/> 
+      <Image src={item.User?.profileimage as string} alt="user profile image"  className="w-10 h-10 rounded-lg"/> 
       <p className="text-muted-foreground pl-3 break-words">{item.User?.firstname}: <span className="text-foreground">{item.message}</span></p>
 
     </div>
