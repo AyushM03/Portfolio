@@ -8,7 +8,7 @@ export function ProfileBanner() {
     hover:shadow-input-grow border-primary-700 active:shadow-input-shrink    transition-all duration-150 
     ease-in-out will-change-transform hover:-translate-y-0.5
      active:translate-y-0.5 active:duration-100  "
-     >
+    >
       <div className="col-span-1 lg:col-span-2 h-full bg-gradient-to-r from-[#FFBB00] to-[#e09200] min-h-[500px] lg:min-h-[300px] rounded-2xl p-8">
         <h1 className="text-4xl lg:text-6xl font-bold text-white">
           Hi Im Ayush Meshram
@@ -19,8 +19,8 @@ export function ProfileBanner() {
         </h1>
         <h5 className=" mt-4  text-muted-foreground  text-xl ">
           I enjoy crafting efficient and scalable solutions, from designing
-          intuitive front-end interfaces to building robust back-end systems.
-          Whether it's a complex web application or a simple script. <br />I
+          intuitive front end interfaces to building robust back end systems.
+          Whether it is a complex web application or a simple script <br />I
           thrive on the challenge of turning ideas into reality through code.
         </h5>
         <h6>
