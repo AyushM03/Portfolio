@@ -91,6 +91,7 @@ export default function CollabForm() {
             placeholder="Name"
             aria-invalid={!!errors.name}
             className={inputClasses}
+            suppressHydrationWarning
           />
           {errors.name && (
             <p className="mt-1.5 text-sm text-red-600">{errors.name.message}</p>
@@ -104,6 +105,7 @@ export default function CollabForm() {
             placeholder="Email"
             aria-invalid={!!errors.email}
             className={inputClasses}
+            suppressHydrationWarning
           />
           {errors.email && (
             <p className="mt-1.5 text-sm text-red-600">{errors.email.message}</p>
@@ -119,6 +121,7 @@ export default function CollabForm() {
             placeholder="LinkedIn URL (optional)"
             aria-invalid={!!errors.linkedinUrl}
             className={inputClasses}
+            suppressHydrationWarning
           />
           {errors.linkedinUrl && (
             <p className="mt-1.5 text-sm text-red-600">
@@ -133,6 +136,7 @@ export default function CollabForm() {
             type="tel"
             placeholder="Phone (optional)"
             className={inputClasses}
+            suppressHydrationWarning
           />
         </div>
       </div>
@@ -142,6 +146,7 @@ export default function CollabForm() {
           {...register("reason")}
           aria-invalid={!!errors.reason}
           className={`${inputClasses} appearance-none`}
+          suppressHydrationWarning
         >
           <option value="collaboration">Collaboration</option>
           <option value="recruiting">Recruiting</option>
@@ -159,6 +164,7 @@ export default function CollabForm() {
           rows={5}
           aria-invalid={!!errors.message}
           className={`${inputClasses} resize-none`}
+          suppressHydrationWarning
         />
         {errors.message && (
           <p className="mt-1.5 text-sm text-red-600">{errors.message.message}</p>
@@ -173,6 +179,7 @@ export default function CollabForm() {
         autoComplete="off"
         aria-hidden="true"
         className="hidden"
+        suppressHydrationWarning
       />
 
       {submitState === "error" && (
@@ -185,6 +192,7 @@ export default function CollabForm() {
         type="submit"
         disabled={submitState === "submitting"}
         className="inline-flex w-full items-center justify-center rounded-md bg-foreground px-7 py-4 text-sm font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-85 disabled:opacity-50"
+        suppressHydrationWarning
       >
         {submitState === "submitting" ? "Sending…" : "Send message"}
       </button>

@@ -210,6 +210,17 @@ no component edits needed.
   `reducedMotion: "reduce"` emulation: no console errors, body scroll
   lock releases correctly after load, reduced-motion path dismisses
   near-instantly. `npm run build` and `npm run lint` pass clean.
+- **2026-09-17** — Another hydration-mismatch report, same root cause
+  pattern as the `cz-shortcut-listen` one earlier but on `CollabForm`'s
+  fields this time: `fdprocessedid` attributes injected by a password
+  manager/form-filler browser extension (LastPass does this) on every
+  `<input>`/`<select>`/`<button>` it scans — not rendered by our code.
+  Added `suppressHydrationWarning` to all of `CollabForm`'s form
+  controls (name/email/linkedinUrl/phone/message fields, the reason
+  `<select>`, the honeypot input, and the submit button). Same fix
+  family as `<body>`'s `suppressHydrationWarning`, just needed on each
+  element this time since the mismatch is per-field, not just once on
+  `<body>`. `npm run build` and `npm run lint` pass clean.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
