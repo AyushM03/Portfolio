@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Phudu } from "next/font/google";
 import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col font-sans">
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );

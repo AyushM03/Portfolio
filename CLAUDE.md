@@ -10,9 +10,16 @@ scope/content/data-model details not repeated here.
 
 ## Working style for this project
 
-- The user wants to review and approve work **step by step**, not have the
-  whole site built in one pass. Finish one step, stop, summarize, and ask
-  what to do next — don't chain straight into the next phase unprompted.
+- The user wants to review and approve work **step by step** between
+  distinct phases/milestones — don't chain into a new phase unprompted.
+  Within a phase, once they say "build all of X", batch it without
+  stopping after each component. (2026-09-17: Nav and Hero were built one
+  at a time and checked individually; the user then explicitly asked for
+  the rest of the frontend sections to be built in one pass.)
+- **Backend work needs an explicit go-ahead.** The user said (2026-09-17)
+  to wait for their response before starting anything backend-related
+  (FastAPI service, Postgres, the collab form's real submit endpoint —
+  PRD Phase 2). Don't start that on inference from other instructions.
 - Images/logos: reuse the template's originals as-is for now (in
   `public/images/`). The user will swap in real photos/logos later — don't
   spend effort sourcing or redesigning them.
@@ -40,15 +47,23 @@ scope/content/data-model details not repeated here.
 ## Structure
 
 ```
-src/app/          Next.js App Router pages/layout (currently still scaffold defaults)
-public/images/     logo/, icons/, shapes/, thumbs/ — all template image assets, untouched
-reference/         gitignored — original template HTML/CSS for visual reference only
-Portfolio-PRD.md   full product requirements doc
+src/app/               layout.tsx (Nav + Footer wrap {children}), page.tsx (composes all sections), globals.css
+src/components/        Nav, Hero, SkillsMarquee, About, CurrentlyGrinding, Works, ProjectCard,
+                        Roadmap, RoadmapStep, Collab, CollabForm, Footer — one file each, per PRD §5.1
+src/data/               site.ts (contact/social config — see below), skills.ts, projects.ts,
+                        roadmap.ts, grinding.ts — content lives here, not hardcoded in components
+public/images/          logo/, icons/, shapes/, thumbs/ — all template image assets, untouched
+reference/              gitignored — original template HTML/CSS for visual reference only
+Portfolio-PRD.md       full product requirements doc
 ```
 
-Planned (not yet created): `src/components/` (Nav, Hero, SkillsMarquee, About,
-CurrentlyGrinding, ProjectCard, RoadmapStep, CollabForm, Footer per PRD §5.1),
-`src/data/` for content (skills list, projects, roadmap steps).
+**`src/data/site.ts`** centralizes every PRD §12 open question (email, phone,
+github, linkedin, leetcode — all `null` right now, plus `resumeUrl` pointing
+at `/resume.pdf` which doesn't exist yet). Components that render these
+(`Nav`, `About`, `Collab`, `Footer`) check for `null`/falsy and skip
+rendering that link rather than showing a dead href. **Filling in real
+values there is the single place to update once the user provides them** —
+no component edits needed.
 
 ## Progress log
 
@@ -94,6 +109,60 @@ CurrentlyGrinding, ProjectCard, RoadmapStep, CollabForm, Footer per PRD §5.1),
   worth including. Verified with headless Chromium at 1440px and 390px:
   all three anchor links (View my work/Let's collab/scroll cue) scroll to
   the correct section, no console errors. `npm run build` passes.
+- **2026-09-17** — Built the rest of the frontend in one pass (user asked
+  for all remaining sections, then to update this file and wait for
+  local review — backend explicitly on hold, see Working style above).
+  Added `src/data/` (site.ts, skills.ts, projects.ts, roadmap.ts,
+  grinding.ts) as the single source of content, then:
+  - **SkillsMarquee** — infinite CSS-keyframe ticker (`.animate-marquee`
+    in `globals.css`, duplicated list for a seamless loop, pauses on
+    hover), dark strip, skills from `data/skills.ts`.
+  - **About** — two-column photo (`about-three-thumb.jpg`, a stand-in
+    until a real photo exists) + bio + GitHub/LinkedIn icon links, which
+    only render if `siteConfig.github`/`linkedin` are set (currently
+    aren't, so no dead links show).
+  - **CurrentlyGrinding** — list from `data/grinding.ts` with a pulsing
+    dot per line (CSS `animate-ping`) suggesting "ongoing," not a fake
+    live tracker.
+  - **Works + ProjectCard** — renders `data/projects.ts` (the two PRD
+    §7.1 demos, TaskFlow API + QuickLink), each visibly badged "Demo".
+    Deliberately did **not** reuse the template's `portfolio-three-thumb*`
+    images for card thumbnails — they're design-agency phone-mockup
+    photos that would misrepresent these as UI/branding work instead of
+    backend APIs. Used a plain dark gradient + Phosphor `Code` icon
+    instead. (About's photo reuse is different — that slot is
+    specifically "a person's photo," so the template stand-in fits;
+    project thumbnails are different because the image content itself
+    contradicts what the card describes.)
+  - **Roadmap + RoadmapStep** — 5-step numbered timeline (horizontal on
+    desktop, vertical on mobile) from `data/roadmap.ts`, connecting line
+    between numbered circles.
+  - **Collab + CollabForm + Footer** — dark section with contact info
+    (email/phone, hidden since both are `null` in site.ts) beside the
+    form. Form uses `react-hook-form` + `zod` for real client-side
+    validation (name/email/reason/message required, LinkedIn URL/phone
+    optional, honeypot field for spam). **No backend exists yet**, so
+    `onSubmit` simulates the request and shows a success state that
+    explicitly tells the user nothing was actually sent — chosen over
+    faking a real save, per PRD Phase 1 ("contact form not yet
+    functional"). `Footer` (quick links, social icons gated the same way
+    as About's, back-to-top) is rendered once in `layout.tsx` below
+    `{children}`, not per-page.
+  - Wired all of it into `page.tsx` in order, replacing the placeholder
+    loop entirely.
+  - **Fixed `eslint.config.mjs`**: `reference/` wasn't in `globalIgnores`,
+    so `npm run lint` was linting the vendored jQuery/GSAP/Bootstrap files
+    in there (1656 problems, all noise). Added `"reference/**"` to the
+    ignore list; lint is now clean (0 problems) on actual source.
+  - Verified with headless Chromium at 1440px and 390px: full-page
+    scroll-through screenshots, no console errors, and targeted
+    viewport screenshots of the Roadmap and Collab sections to confirm
+    layout (a full-page screenshot briefly looked like it had a second
+    Nav bar floating mid-document — confirmed that's a known Playwright
+    full-page-screenshot stitching artifact with `position: sticky`
+    elements, not a real bug; viewport-only screenshots at those scroll
+    positions show a single correctly-positioned Nav). `npm run build`
+    and `npm run lint` both pass clean.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

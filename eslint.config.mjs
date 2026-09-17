@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Original static template, kept locally for design reference only —
+    // not part of the app, never linted.
+    "reference/**",
   ]),
 ]);
 

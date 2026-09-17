@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { List, X } from "@phosphor-icons/react";
+import { siteConfig } from "@/data/site";
 
 const NAV_LINKS = [
   { href: "#about", label: "About" },
@@ -67,7 +68,7 @@ export default function Nav() {
 
         <div className="flex items-center gap-3">
           <a
-            href="/resume.pdf"
+            href={siteConfig.resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden items-center rounded-md bg-foreground px-6 py-3 text-sm font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-85 md:inline-flex"
@@ -110,7 +111,7 @@ export default function Nav() {
               ))}
               <li>
                 <a
-                  href="/resume.pdf"
+                  href={siteConfig.resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsMenuOpen(false)}
