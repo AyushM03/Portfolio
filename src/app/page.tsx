@@ -1,5 +1,6 @@
+import Hero from "@/components/Hero";
+
 const PLACEHOLDER_SECTIONS = [
-  { id: "home", label: "Hero" },
   { id: "about", label: "About" },
   { id: "grinding", label: "Currently Grinding" },
   { id: "works", label: "Works" },
@@ -10,6 +11,7 @@ const PLACEHOLDER_SECTIONS = [
 export default function Home() {
   return (
     <main className="flex-1">
+      <Hero />
       {PLACEHOLDER_SECTIONS.map((section) => (
         <section
           key={section.id}

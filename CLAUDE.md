@@ -80,6 +80,20 @@ CurrentlyGrinding, ProjectCard, RoadmapStep, CollabForm, Footer per PRD §5.1),
   (Playwright) pass: desktop anchor scrolling, mobile menu open/close and
   auto-close-on-navigate, and no console errors, on both a 1440px and a
   390px viewport. `npm run build` passes.
+- **2026-09-17** — Built the `Hero` component (`src/components/Hero.tsx`),
+  replacing the `#home` placeholder in `page.tsx`: eyebrow line ("Ayush
+  Meshram · Nagpur, India"), the PRD §9 headline ("Building systems that
+  hold up.") in Phudu at fluid clamp() size, the subtext, two CTAs ("View
+  my work" → `#works`, "Let's collab" → `#collab`), and a bouncing
+  scroll-cue arrow linking to `#about`. Staggered Framer Motion
+  fade/slide-in on load. Deliberately skipped the template's decorative
+  hero assets (`banner-three-man.png` illustration, fake client-satisfaction
+  counters/avatars) — PRD §3 forbids fabricated accomplishments and wants a
+  clean engineer aesthetic over agency decoration; checked
+  `banner-three-shape.png` too and it's just a thin outline frame, not
+  worth including. Verified with headless Chromium at 1440px and 390px:
+  all three anchor links (View my work/Let's collab/scroll cue) scroll to
+  the correct section, no console errors. `npm run build` passes.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
