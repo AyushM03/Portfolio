@@ -171,6 +171,17 @@ no component edits needed.
   `suppressHydrationWarning` to the `<body>` tag in
   `src/app/layout.tsx` (the standard Next.js fix for extension-injected
   attributes on `<html>`/`<body>`). `npm run build` still passes.
+- **2026-09-17** — User pointed out the Hero's right side was empty.
+  Changed `Hero` to a two-column grid on `lg:` (text left, photo right,
+  stacks to a single column below that); the photo sits in a
+  `next/image fill` box at `aspect-[4/5]` with a small offset lime
+  accent block behind it for depth. Reused `about-three-thumb.jpg` — the
+  only image asset in `public/images/` with enough resolution for a
+  large hero photo (`footer-three-thumb.jpg` is only 154×168px, too
+  small); it's already the placeholder in `About`, and reusing the same
+  stand-in photo in both places is expected until a real photo replaces
+  it in both. Verified at 1440px and 390px with headless Chromium — no
+  console errors, both build and lint pass clean.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
