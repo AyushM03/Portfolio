@@ -163,6 +163,14 @@ no component edits needed.
     elements, not a real bug; viewport-only screenshots at those scroll
     positions show a single correctly-positioned Nav). `npm run build`
     and `npm run lint` both pass clean.
+- **2026-09-17** — User ran `npm run dev` locally and saw a hydration
+  mismatch warning on `<body>` pointing at a `cz-shortcut-listen="true"`
+  attribute. That attribute is injected by the ColorZilla browser
+  extension after page load, not rendered by our code — it's the
+  extension case the React warning itself calls out. Added
+  `suppressHydrationWarning` to the `<body>` tag in
+  `src/app/layout.tsx` (the standard Next.js fix for extension-injected
+  attributes on `<html>`/`<body>`). `npm run build` still passes.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
