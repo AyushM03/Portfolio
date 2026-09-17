@@ -182,6 +182,34 @@ no component edits needed.
   stand-in photo in both places is expected until a real photo replaces
   it in both. Verified at 1440px and 390px with headless Chromium — no
   console errors, both build and lint pass clean.
+- **2026-09-17** — User asked to add a preloader, linking a Framer Market
+  "Preloader" component (`framer.com/m/Preloader-...js`). Did **not**
+  import that URL — Framer Market `.js` modules are built for Framer's
+  own site-builder runtime (they import from a special `"framer"`
+  package for property controls) and won't run correctly in a Next.js
+  app; pulling remote executable JS into the codebase at runtime also
+  isn't something to wire in without real vetting. Built an equivalent
+  natively instead, in `src/components/Preloader.tsx`, rendered first in
+  `layout.tsx` (above `Nav`): full-screen dark overlay, name +
+  progress-bar/percentage counting 0→100 over 1.4s, then the whole
+  overlay curtain-slides up (`exit={{ y: "-100%" }}`, 0.8s) to reveal the
+  page — modeled on the original UNIFEX template's own preloader concept
+  (it had one, built with GSAP/an SVG wipe, dropped when the template's
+  JS was removed during scaffolding) rather than a literal port.
+  Respects `prefers-reduced-motion`: reads the media query directly via a
+  lazy `useState` initializer (framer-motion's own `useReducedMotion()`
+  hook caches its result in a module-level singleton set once — often
+  during SSR where `window` doesn't exist — and never rechecks, so it
+  under-reports on the client here; verified this with a debug pass
+  before switching approaches). For reduced motion, the same
+  `animate()`/`onComplete` path runs with a ~0 duration and a plain
+  opacity exit instead of the y-slide, so `setIsLoading` is only ever
+  called inside a callback, never synchronously in the effect body
+  (`react-hooks/set-state-in-effect` caught this and lint is clean now).
+  Verified with headless Chromium at 1440px and 390px, both normal and
+  `reducedMotion: "reduce"` emulation: no console errors, body scroll
+  lock releases correctly after load, reduced-motion path dismisses
+  near-instantly. `npm run build` and `npm run lint` pass clean.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
