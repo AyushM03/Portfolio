@@ -60,3 +60,33 @@ CurrentlyGrinding, ProjectCard, RoadmapStep, CollabForm, Footer per PRD §5.1),
   tailwind-merge. Verified `npm install` and `npm run build` succeed
   (`8b27dcc`). No component/page code written yet — `src/app/page.tsx` is
   still the default Next.js starter page.
+- **2026-09-17** — Built the `Nav` component (`src/components/Nav.tsx`):
+  sticky header that gains a white/blurred background + shadow on scroll,
+  desktop link row (About/Currently Grinding/Works/Roadmap/Collab anchors),
+  a Resume CTA linking to `/resume.pdf` (file not yet added — drop the real
+  PDF in `public/` when ready, no code change needed), and a mobile
+  hamburger menu (Framer Motion slide-down panel, Phosphor `List`/`X`
+  icons, closes on link click, locks body scroll while open). Wired into
+  `src/app/layout.tsx` so it's global across the single-page site. Set up
+  the font/color foundation in the same pass: `next/font/google` for
+  Instrument Sans (body) and Phudu (headings, matches the template's
+  display font), plus `--accent`/`--accent-two` color tokens in
+  `globals.css` carried over from the template's lime/orange palette
+  (`hsl(72 99% 45%)` / `hsl(19 100% 50%)`) for later use — Nav itself
+  doesn't use them yet. `src/app/page.tsx` now has 6 empty placeholder
+  `<section id="...">` stubs (home/about/grinding/works/roadmap/collab) so
+  Nav's anchor links have real scroll targets; these get replaced one by
+  one as each section is built. Verified with a headless-Chromium
+  (Playwright) pass: desktop anchor scrolling, mobile menu open/close and
+  auto-close-on-navigate, and no console errors, on both a 1440px and a
+  390px viewport. `npm run build` passes.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
