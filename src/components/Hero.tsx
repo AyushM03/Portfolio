@@ -73,7 +73,7 @@ export default function Hero() {
           <div className="absolute -right-4 -top-4 -z-10 hidden aspect-[4/5] w-full rounded-lg bg-accent md:block" />
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
             <Image
-              src="/images/thumbs/about-three-thumb.jpg"
+              src="/images/myself/me1.png"
               alt={siteConfig.name}
               fill
               priority

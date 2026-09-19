@@ -44,12 +44,12 @@ export default function Nav() {
       <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4 md:px-10">
         <Link href="#home" className="shrink-0">
           <Image
-            src="/images/logo/logo-secendary.png"
+            src="/images/logo/ayushlogo.png"
             alt="Ayush Meshram"
-            width={140}
+            width={150}
             height={40}
             priority
-            className="h-8 w-auto md:h-9"
+            className="h-11 w-auto md:h-14"
           />
         </Link>
 

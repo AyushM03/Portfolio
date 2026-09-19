@@ -221,6 +221,10 @@ no component edits needed.
   family as `<body>`'s `suppressHydrationWarning`, just needed on each
   element this time since the mismatch is per-field, not just once on
   `<body>`. `npm run build` and `npm run lint` pass clean.
+- **2026-09-19** — User said the nav logo (`ayushlogo.png`, swapped in by
+  the user earlier) was too small to read the name. Bumped `Nav.tsx`'s
+  logo `className` from `h-8 w-auto md:h-9` to `h-11 w-auto md:h-14`
+  (32px→44px mobile, 36px→56px desktop).
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -22,7 +22,7 @@ export default function About() {
           className="overflow-hidden rounded-lg"
         >
           <Image
-            src="/images/thumbs/about-three-thumb.jpg"
+            src="/images/myself/me4.png"
             alt={siteConfig.name}
             width={720}
             height={812}
