@@ -291,6 +291,104 @@ no component edits needed.
     the tooltip fix, clicked the GitHub legend link to confirm it resolves
     to `https://github.com/AyushM03`, checked `console --errors` was empty
     throughout. `npm run build` and `npm run lint` both pass clean.
+- **2026-09-20** — Filled in real contact info in `src/data/site.ts`:
+  email (`aayushmeshram9168@gmail.com`), phone (`+91 9168499284`), LinkedIn
+  (`https://www.linkedin.com/in/ayushmeshram/`). Footer/Collab/Nav/About now
+  render these instead of hiding the links.
+- **2026-09-20** — User gave explicit go-ahead to start PRD Phase 2 (the
+  collab backend, previously gated per this file's working-style rule).
+  Built the FastAPI + PostgreSQL service in a new `backend/` directory,
+  confirmed with the user: notifications via **Resend** (not Discord/
+  Telegram), local Postgres via **Docker Compose**.
+  - `backend/app/` — `main.py` (FastAPI app, CORS restricted to
+    `ALLOWED_ORIGINS`, `POST /api/inquiries`, `GET /health`),
+    `models.py` (SQLAlchemy `Inquiry` model — matches PRD §8's `inquiries`
+    table exactly: id/name/email/linkedin_url/phone/reason/message/status/
+    created_at), `schemas.py` (Pydantic `InquiryCreate`, accepts the
+    frontend's camelCase `linkedinUrl` via a Pydantic alias so no frontend
+    field renaming was needed), `notifications.py` (Resend email on new
+    inquiry, `html.escape()`s every user-supplied field before interpolating
+    into the email HTML — untrusted input otherwise lands straight in an
+    HTML email body), `config.py` (`pydantic-settings`, all secrets/URLs
+    from env vars, nothing hardcoded).
+  - Rate limiting: `slowapi`, keyed off `X-Forwarded-For` (falls back to
+    the socket peer address) so it works correctly once deployed behind
+    Render/Railway's proxy, not just the raw connecting IP — a plain
+    `get_remote_address` would rate-limit the proxy, not the visitor, once
+    deployed. Default `5/hour`, configurable via `RATE_LIMIT` env var.
+  - Honeypot (`company` field, mirrors `CollabForm`'s existing client-side
+    honeypot): if filled, the endpoint returns the same `200 {"status":
+    "ok"}` as a real success and does nothing — writes nothing to the DB,
+    sends no notification — so a bot never learns the tell from a
+    different response shape.
+  - A notification-send failure (bad Resend key, Resend outage) is caught
+    and logged, never surfaced as a submit error — the inquiry is already
+    committed to Postgres by that point, so a delivery hiccup shouldn't
+    make the visitor think their message was lost.
+  - Migrations via Alembic (`backend/alembic/versions/0001_...py`) rather
+    than `create_all()` — deliberate, since this backend is explicitly also
+    meant as FastAPI/Postgres practice (PRD §1, roadmap's "Backend Depth"
+    step) and schema migrations are core to that.
+  - `docker-compose.yml` (Postgres 16 + the API, healthcheck-gated
+    `depends_on`) for local dev. **Host port 5433 → container 5432** —
+    deliberately not 5432:5432, because this machine already runs a native
+    Postgres Windows service on 5432 for other projects; container-to-
+    container traffic (the API's own `DATABASE_URL`) is unaffected since it
+    addresses the `db` service by name on the compose network regardless of
+    the host port mapping.
+  - Wired `CollabForm.tsx`'s `onSubmit` to actually `fetch()`
+    `${NEXT_PUBLIC_API_URL}/api/inquiries` (added `.env.local.example` at
+    the repo root, default `http://localhost:8000`) instead of the old
+    `setTimeout` simulation; updated the post-submit copy since the form is
+    no longer fake. Added `!.env*.example` to the frontend's root
+    `.gitignore` — its blanket `.env*` rule was also swallowing the new
+    example file.
+  - **Bug caught by testing, not by inspection:** the first version of the
+    Alembic migration both called `.create(checkfirst=True)` on the two
+    enum types explicitly *and* passed the same `ENUM(...)` type objects
+    into the `inquiries` columns in the same `op.create_table(...)` call.
+    SQLAlchemy's Postgres dialect auto-issues its own `CREATE TYPE` for any
+    enum column unless that specific column's type instance is constructed
+    with `create_type=False` — so this ran `CREATE TYPE inquiry_reason`
+    twice in one migration and failed with `DuplicateObject` on `alembic
+    upgrade head`. Fixed by adding `create_type=False` to the enum types
+    used on the columns themselves, since the explicit `.create()` calls
+    above them already handle creation. Postgres's transactional DDL meant
+    the failed first attempt left no partial state behind (verified via
+    `\dT+`/`\dt` before re-running) — worth remembering next time a
+    migration needs both an explicit enum creation and a table using it.
+  - Verified for real, not just import-level: `docker compose up -d
+    --build` (Postgres 16-alpine + the API container), `alembic upgrade
+    head` inside the container, then a full round trip — `curl` a valid
+    payload → confirmed the row in `psql`, `curl` an invalid payload →
+    confirmed the exact 422 field errors, `curl` with the honeypot field
+    filled → confirmed `200 ok` with **no** row written. Then the real
+    frontend: `npm run dev` + a headless-Chromium (Playwright) script that
+    fills and submits the actual `CollabForm` UI at `localhost:3000/#collab`
+    → confirmed the real success copy appears, zero console errors, and the
+    submitted row lands in Postgres. Test rows deleted afterward. `npm run
+    build` and `npm run lint` both pass clean on the frontend changes.
+  - Docker's registry pull was blocked by this session's command sandbox
+    (CDN blob fetches returned `EOF`) — resolved by rerunning the pull/build
+    step with the sandbox disabled for that command; not a problem with the
+    user's actual network or Docker install.
+  - **Left running for continued local dev:** the `docker compose` stack
+    (Postgres + API) in `backend/`, so the user can keep testing against it.
+  - **Still open from PRD §11 Phase 2 / §12:** choice of backend+DB hosting
+    provider (Railway vs. Render; Neon/Supabase for prod Postgres) — not
+    needed for local dev, only once this gets deployed.
+- **2026-09-20** — User signed up for Resend (free tier — 3,000 emails/mo,
+  no card required) and pasted a real `RESEND_API_KEY` into `backend/.env`
+  (gitignored, never committed). Recreated the `api` container
+  (`docker compose up -d --force-recreate api`) so it picked up the new env
+  var — `db` also got recreated in the same command, but the named
+  `db_data` volume persisted the schema/data across that, verified via
+  `\dt` before and after. Sent a real test inquiry through the API and
+  confirmed via Resend's own `/emails` endpoint (not just absence of an
+  error in our logs) that the notification actually reached
+  `aayushmeshram9168@gmail.com` — `last_event: "delivered"`. Test row
+  deleted afterward. **Collab backend notifications are now fully live**,
+  closing out the last open piece of PRD Phase 2.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

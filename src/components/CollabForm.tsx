@@ -50,9 +50,13 @@ export default function CollabForm() {
 
     setSubmitState("submitting");
     try {
-      // No backend exists yet (PRD Phase 2) — this simulates the request
-      // so the UX/validation flow is real and ready to wire up later.
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+      const res = await fetch(`${apiUrl}/api/inquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
       setSubmitState("success");
       reset();
     } catch {
@@ -67,8 +71,7 @@ export default function CollabForm() {
           Thanks for reaching out.
         </p>
         <p className="mt-2 text-foreground/60">
-          This form isn&apos;t wired to a backend yet, so nothing was sent —
-          that&apos;s coming in the next phase of this site&apos;s build.
+          I&apos;ll get back to you soon.
         </p>
         <button
           type="button"
