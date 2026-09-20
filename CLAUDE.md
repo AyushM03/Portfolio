@@ -389,6 +389,84 @@ no component edits needed.
   `aayushmeshram9168@gmail.com` — `last_event: "delivered"`. Test row
   deleted afterward. **Collab backend notifications are now fully live**,
   closing out the last open piece of PRD Phase 2.
+- **2026-09-20** — Resolved three more PRD §12 open questions on explicit
+  user direction: Demo badge → internal marker only, case-study pages →
+  stay deferred to Phase 3, real favicon + Open Graph metadata, backend
+  hosting → Render + Neon (both picked for "best and free" after checking
+  current 2026 pricing — Railway and Fly.io no longer have real ongoing
+  free tiers, and Neon's free Postgres has no forced pause/expiry the way
+  Render's own free Postgres or Supabase's free tier do).
+  - **`ProjectCard`**: removed the visible "Demo" badge `<span>`; `project
+    .isDemo` now only surfaces as a `data-demo` attribute on the card
+    (inspectable in devtools, invisible to a normal visitor). No PRD data
+    model change — same `isDemo` field, just not rendered as UI anymore.
+  - **Favicon**: cropped the spiky-hair/swirl-eyes character mark out of
+    `public/images/logo/ayushlogo.png` (the full logo is a wide wordmark —
+    unreadable shrunk into a square favicon) into a square, padded to a
+    transparent-free white-background square via Pillow, and generated
+    `src/app/icon.png`, `src/app/apple-icon.png`, and a multi-size (16/32/
+    48) `src/app/favicon.ico` from it — replaces the default Next.js icon.
+    **Bug caught by testing:** the first `favicon.ico` was saved from an
+    RGB (no alpha) canvas and failed `next build` outright (Turbopack:
+    "The PNG is not in RGBA format!") — Windows `.ico` needs an RGBA
+    source even when nothing is actually transparent; regenerated from an
+    RGBA canvas and the build passed.
+  - **Open Graph / Twitter card**: added `src/lib/og-image.tsx` (shared
+    render function, since Next.js requires the exact filenames
+    `opengraph-image.tsx` and `twitter-image.tsx` as separate route-segment
+    files — this avoids duplicating the same JSX in both) using `next/og`'s
+    `ImageResponse` to generate a 1200×630 card at request time: dark
+    (`#02080E`) background, lime (`#B7E401`) accent bar and role line —
+    hex versions of `globals.css`'s `--foreground`/`--accent` HSL tokens,
+    computed by hand since `ImageResponse`'s Satori renderer doesn't
+    reliably support `hsl()`. No custom font loaded (Satori's default);
+    kept to plain typography, no photo/decoration, consistent with the
+    "clean engineer aesthetic" the Hero section already committed to.
+    Added `metadataBase` (from a new `NEXT_PUBLIC_SITE_URL` env var,
+    defaults to `localhost:3000`) to `layout.tsx`'s metadata — required
+    for Next.js to resolve the image to an absolute URL — plus `openGraph`
+    and `twitter` (`summary_large_image`) fields.
+  - Verified for real: `npm run build` (catches the favicon RGBA bug above
+    — import-level checks wouldn't have), then `npm run start` and
+    `curl`'d `/opengraph-image` directly (viewed the actual rendered PNG —
+    correct colors/layout/text) and grepped the served HTML `<head>` to
+    confirm every `og:*`/`twitter:*` meta tag and all three icon `<link>`
+    tags render with the right paths, and confirmed no "Demo" text renders
+    while `data-demo="true"` is still present in the markup. `npm run
+    lint` clean throughout.
+  - **Backend hosting decision + deploy prep**: added `render.yaml` at the
+    repo root (Blueprint spec, `rootDir: backend`, Docker runtime, `plan:
+    free`, `dockerCommand` without `--reload` since that's dev-only,
+    secrets marked `sync: false` so Render prompts for them instead of
+    storing plaintext in the repo). Postgres itself is **not** in this
+    file — it's Neon, provisioned separately since it's a different
+    provider. **Not yet done — needs the user, same as Resend earlier**:
+    sign up at neon.tech (free), create a project, get the connection
+    string, and rewrite its scheme from `postgresql://` to
+    `postgresql+psycopg://` (this backend uses the psycopg3 driver, not
+    psycopg2 — Neon's copy-paste string won't have the `+psycopg` part).
+    Then sign up at Render, deploy this Blueprint, paste in `DATABASE_URL`
+    (the rewritten Neon string), `RESEND_API_KEY`, and — once the frontend
+    itself is deployed — `ALLOWED_ORIGINS` set to that real origin. Run
+    `alembic upgrade head` once against the Neon database before first use
+    (from a local shell with `DATABASE_URL` pointed at Neon, or Render's
+    own shell once deployed).
+- **2026-09-20** — User signed up for Neon and put a real connection
+  string in `backend/.env`'s `DATABASE_URL` (gitignored, never committed).
+  Took two tries: first the file looked unedited on read — turned out to
+  be an unsaved editor buffer, not a tool issue; second, the pasted string
+  still had Neon's default `postgresql://` scheme, corrected to
+  `postgresql+psycopg://` per the note above (without echoing the
+  credentials back in chat). Ran `alembic upgrade head` from a local venv
+  (`backend/.venv`, created earlier for import-level checks) directly
+  against Neon — succeeded, created the same `inquiries` table/enums as
+  the local Docker Postgres. Verified for real, not just the migration:
+  ran the API standalone (`uvicorn`, port 8001, bypassing Docker) with
+  `DATABASE_URL` pointed at Neon, submitted a real inquiry via `curl`,
+  and queried Neon directly through the app's own `SessionLocal`/`Inquiry`
+  model to confirm the row actually landed there. Test row deleted after.
+  **The production database is live and reachable** — only Render
+  (the API host) is still pending, per the steps above.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

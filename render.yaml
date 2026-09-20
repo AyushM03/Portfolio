@@ -1,0 +1,29 @@
+# Render Blueprint for the collab backend (backend/). Deploy via
+# Render's dashboard -> New -> Blueprint, pointing at this repo.
+# Postgres itself is NOT defined here — it lives on Neon (free tier,
+# doesn't expire, scales to zero) — see backend/.env.example for the
+# vars this service needs and CLAUDE.md's progress log for why.
+services:
+  - type: web
+    name: portfolio-collab-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL # Neon connection string, e.g. postgresql+psycopg://...
+        sync: false
+      - key: ALLOWED_ORIGINS # the deployed frontend's origin, e.g. https://ayushmeshram.dev
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: NOTIFY_EMAIL_FROM
+        value: onboarding@resend.dev
+      - key: NOTIFY_EMAIL_TO
+        value: aayushmeshram9168@gmail.com
+      - key: RATE_LIMIT
+        value: 5/hour

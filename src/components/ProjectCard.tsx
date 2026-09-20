@@ -5,14 +5,12 @@ export default function ProjectCard({ project }: { project: Project }) {
   return (
     <a
       href={project.href}
+      // isDemo stays an internal-only marker (decided 2026-09-20, PRD §12) —
+      // no visible "Demo" badge to visitors until a real project replaces it.
+      data-demo={project.isDemo || undefined}
       className="group flex flex-col overflow-hidden rounded-lg border border-black/10 transition-colors hover:border-black/25"
     >
       <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-neutral-900 to-neutral-700">
-        {project.isDemo && (
-          <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wide text-foreground">
-            Demo
-          </span>
-        )}
         <Code size={56} className="text-white/25" weight="thin" />
       </div>
 

@@ -165,14 +165,14 @@ Rules for this section:
 
 ## 12. Open questions / needs input
 
-- [ ] Real contact email and phone number for the footer
+- [x] Real contact email and phone number for the footer — filled in `src/data/site.ts` (2026-09-20)
 - [ ] Resume file (final PDF)
-- [ ] LeetCode and/or GitHub profile URLs, if the Currently Grinding strip should link out
-- [ ] Whether the "Demo" badge on placeholder projects should be visible to visitors or just an internal marker
+- [x] LeetCode and/or GitHub profile URLs — filled in `src/data/site.ts` (2026-09-20; also added Codeforces)
+- [x] Whether the "Demo" badge on placeholder projects should be visible to visitors or just an internal marker — **decided: internal marker only** (2026-09-20). `Project.isDemo` stays in the data model and is exposed as a `data-demo` attribute on the card, but no visible "Demo" badge renders for visitors until a real project replaces the placeholder.
 - [ ] Exact timeline for Agent Action Firewall / SymptMeal reaching demo-ready state
-- [ ] Exact hosting provider for the backend (Railway vs. Render) — either works, no strong constraint yet
-- [ ] Animation library choice for React (GSAP bindings vs. Framer Motion) — decide once component work starts
-- [ ] Whether case-study detail pages are needed in v1 or deferred to Phase 3
+- [x] Exact hosting provider for the backend — **decided: Render (free tier) for the API + Neon (free tier, permanent) for Postgres** (2026-09-20). Neon over Supabase because Neon's free tier has no forced pause/expiry (Supabase's free databases pause after a week of inactivity); Railway and Fly.io were ruled out since neither has a real ongoing free tier as of 2026. See `render.yaml` at the repo root and `CLAUDE.md`'s progress log for the deploy steps.
+- [x] Animation library choice for React — **decided: Framer Motion** (see `CLAUDE.md`)
+- [x] Whether case-study detail pages are needed in v1 or deferred to Phase 3 — **decided: stay deferred to Phase 3**, no `/projects/[slug]` pages in v1 (2026-09-20)
 
 ## 13. Success criteria
 
