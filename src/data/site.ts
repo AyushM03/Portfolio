@@ -10,8 +10,9 @@ export const siteConfig = {
   location: "Nagpur, India",
   email: null as string | null,
   phone: null as string | null,
-  github: null as string | null,
+  github: "https://github.com/AyushM03",
   linkedin: null as string | null,
-  leetcode: null as string | null,
+  leetcode: "https://leetcode.com/u/AyushMM03/",
+  codeforces: "https://codeforces.com/profile/ayushm03",
   resumeUrl: "/resume.pdf",
 };

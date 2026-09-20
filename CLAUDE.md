@@ -225,6 +225,72 @@ no component edits needed.
   the user earlier) was too small to read the name. Bumped `Nav.tsx`'s
   logo `className` from `h-8 w-auto md:h-9` to `h-11 w-auto md:h-14`
   (32px→44px mobile, 36px→56px desktop).
+- **2026-09-20** — User asked to pull the PRD's Phase 4 "live Currently
+  Grinding data" forward: replace the plain-text strip with a GitHub-style
+  contribution heatmap combining GitHub + LeetCode + Codeforces daily
+  activity, with per-day hover tooltips (0 if nothing happened that day)
+  and click-through from each platform name to the real profile. Confirmed
+  with the user first, since CLAUDE.md gates backend work behind explicit
+  go-ahead: this uses lightweight Next.js API routes/server components in
+  this same app (no FastAPI service, no database), which the user approved
+  as in-scope separately from the gated Phase 2 backend. Got real handles
+  from the user: GitHub `AyushM03`, LeetCode `AyushMM03`, Codeforces
+  `ayushm03` — filled into `src/data/site.ts` (`github`/`leetcode` were
+  `null`; added a new `codeforces` field).
+  - `src/lib/activity.ts` — merges three public, unauthenticated sources
+    into one `DayActivity[]` (53 weeks, GitHub-style Sunday-aligned grid):
+    GitHub via the unofficial `github-contributions-api.jogruber.de` REST
+    wrapper (no token needed, avoids exposing a GitHub PAT), LeetCode via
+    its public `leetcode.com/graphql` `userCalendar.submissionCalendar`
+    query, Codeforces via its official `user.status` REST API grouped by
+    `creationTimeSeconds`. Each source fails independently (try/catch ->
+    empty object) so one platform being down doesn't blank the others.
+    Fetches use `next: { revalidate: 3600 }`, so the page statically
+    prerenders with hourly ISR rather than hitting three external APIs
+    per visitor.
+  - `src/app/api/activity/route.ts` — thin GET wrapper around the same lib
+    function, exposed as `/api/activity` for potential future client-side
+    use.
+  - `CurrentlyGrinding.tsx` is now an async Server Component (dropped
+    `"use client"`/framer-motion on the heading — a Server Component can't
+    render motion primitives) that calls `getActivityData()` directly
+    (no self-fetch over HTTP) and renders a new client component,
+    `ActivityHeatmap.tsx`, with the merged data as props.
+  - `ActivityHeatmap.tsx` — the heatmap grid, a legend row of
+    GitHub/LeetCode/Codeforces totals that link out to the real profiles
+    (per-day breakdown via hover/focus, plain-text tooltip content per the
+    user's own phrasing), and a "Less -> More" scale legend. Colored on a
+    5-step sequential ramp built from the site's own `--accent` lime hue
+    (not the generic dataviz default palette) via opacity steps, per the
+    dataviz skill's sequential-encoding rule (single hue, monotonic
+    lightness) — validated visually rather than through the categorical
+    `validate_palette.js` script, which the skill notes will FAIL-by-design
+    on sequential ramps and isn't the right check for them.
+  - Deleted `src/data/grinding.ts` (the old 3-line manually-updated
+    strip) — fully superseded, nothing else imported it.
+  - **Bug caught by testing, not by inspection:** the first hover-tooltip
+    implementation put the tooltip inside the same `overflow-x-auto` div
+    as the scrolling grid. Setting `overflow-x` alone forces `overflow-y`
+    to compute to `auto` too (CSS spec: an axis can't stay `visible` if
+    its pair isn't), so the container silently clipped the tooltip
+    whenever it rendered near the top of the grid — visually it looked
+    like the date was truncated to just the year. Fixed by moving the
+    tooltip to a sibling of the scrollable inner div, under a
+    non-clipping outer wrapper, plus a horizontal clamp so the tooltip
+    doesn't overflow past the first/last week columns. Caught via a
+    Playwright screenshot during verification, not visible from reading
+    the JSX alone — worth a real hover screenshot on any future
+    absolutely-positioned tooltip inside a scrollable ancestor.
+  - Verified with a live production build (`npm run build` + `npm run
+    start`) hitting `/api/activity` directly — confirmed real nonzero
+    counts merged correctly (42 GitHub contributions, 309 LeetCode
+    submissions, 1 Codeforces submission over the trailing year at time of
+    writing) — then with headless Chromium (Playwright, installed ad hoc
+    into the scratchpad since no project browser-testing skill exists yet)
+    at 1440px and 390px: hovered top-row and last-column cells to confirm
+    the tooltip fix, clicked the GitHub legend link to confirm it resolves
+    to `https://github.com/AyushM03`, checked `console --errors` was empty
+    throughout. `npm run build` and `npm run lint` both pass clean.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
