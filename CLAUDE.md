@@ -492,6 +492,43 @@ no component edits needed.
   Local `.env.local` (`NEXT_PUBLIC_API_URL=http://localhost:8000`) is
   intentionally left pointing at local dev and does not need to change
   for this deploy.
+- **2026-09-21** — User deleted the original `portfolio-collab-api` Render
+  service and redeployed both services together via a single Render
+  **Blueprint** instead of two separate manual setups. Added a
+  `portfolio-frontend` service block to `render.yaml` (Node runtime,
+  `npm install && npm run build` / `npm run start`, `sync: false` for
+  `NEXT_PUBLIC_API_URL`/`NEXT_PUBLIC_SITE_URL`) alongside the existing
+  backend block, committed and pushed (`48dd9a3`).
+  - User accidentally created **two** Blueprint instances from the same
+    repo, which both tried to deploy — resolved by deleting the
+    duplicate; only one Blueprint should exist per repo going forward.
+  - Render auto-suffixed service names to avoid a collision:
+    `portfolio-frontend-aplx` and `portfolio-collab-api-aplx` (not the
+    unsuffixed names from `render.yaml` — these are the real deployed
+    URLs now: `https://portfolio-frontend-aplx.onrender.com` and
+    `https://portfolio-collab-api-aplx.onrender.com`).
+  - **Bug 1**: `DATABASE_URL` didn't get filled in during the Blueprint's
+    secret-entry step, so the backend crash-looped with
+    `pydantic_core.ValidationError` (it's the only field in `Settings`
+    with no default — `backend/app/config.py:5`). Fixed by adding it
+    manually in Render's Environment tab, value = the Neon connection
+    string with scheme rewritten to `postgresql+psycopg://` (same
+    correction as the 09-20 entry above).
+  - **Bug 2**: first end-to-end form submission failed client-side with a
+    CORS preflight error — `ALLOWED_ORIGINS` on the backend didn't match
+    the actual deployed frontend origin. Fixed by setting it to exactly
+    `https://portfolio-frontend-aplx.onrender.com` (no trailing slash).
+  - Neon's `inquiries` table/data were never touched by any of this —
+    only the Render *service* got deleted/recreated, the database itself
+    is a separate provider and was untouched throughout.
+  - **Verified for real**: submitted an actual Collab inquiry through the
+    live deployed frontend and confirmed the Resend email notification
+    arrived. **Both services are now fully deployed and the collab flow
+    works end-to-end in production.**
+  - **Still open**: custom domain (`www.ayushmeshram.dev`) not yet wired
+    up — currently live on the `*.onrender.com` URLs above. Also worth
+    deleting the test inquiry row from Neon (routine local hygiene, not
+    urgent).
 
 <!-- BEGIN:nextjs-agent-rules -->
 
