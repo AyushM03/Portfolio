@@ -467,6 +467,31 @@ no component edits needed.
   model to confirm the row actually landed there. Test row deleted after.
   **The production database is live and reachable** — only Render
   (the API host) is still pending, per the steps above.
+- **2026-09-20** — Backend deployed to Render (`portfolio-collab-api`,
+  from `render.yaml`). Confirmed live and healthy: `GET /health` →
+  `200 {"status":"ok"}` at `https://portfolio-collab-api.onrender.com`.
+  `GET /` → `404 {"detail":"Not Found"}` there is expected, not a bug —
+  `main.py` only defines `/health` and `POST /api/inquiries`, no root
+  route. User decided to point the deployed frontend at
+  `www.ayushmeshram.dev` (CNAME, not the apex domain — apex left unused
+  for now) rather than a bare `*.onrender.com` URL. **User is pausing
+  here and will resume the deploy process tomorrow.** Remaining steps,
+  none done yet:
+  1. Deploy the frontend as its own Render web service.
+  2. In that service's Render dashboard → Settings → Custom Domains, add
+     `www.ayushmeshram.dev`, then add the CNAME record Render displays
+     at whichever registrar holds `ayushmeshram.dev`'s DNS.
+  3. Set env vars **in the Render dashboard** (not local `.env*` files,
+     which are gitignored and never reach the deployed build):
+     - Frontend service: `NEXT_PUBLIC_API_URL=https://portfolio-collab-api.onrender.com`,
+       `NEXT_PUBLIC_SITE_URL=https://www.ayushmeshram.dev`
+     - Backend service (`portfolio-collab-api`):
+       `ALLOWED_ORIGINS=https://www.ayushmeshram.dev` (currently unset —
+       the deployed CollabForm's `fetch()` will be CORS-blocked until
+       this is set to the real frontend origin).
+  Local `.env.local` (`NEXT_PUBLIC_API_URL=http://localhost:8000`) is
+  intentionally left pointing at local dev and does not need to change
+  for this deploy.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

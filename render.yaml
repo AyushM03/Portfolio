@@ -1,9 +1,22 @@
-# Render Blueprint for the collab backend (backend/). Deploy via
+# Render Blueprint for both the frontend and the collab backend. Deploy via
 # Render's dashboard -> New -> Blueprint, pointing at this repo.
 # Postgres itself is NOT defined here — it lives on Neon (free tier,
 # doesn't expire, scales to zero) — see backend/.env.example for the
-# vars this service needs and CLAUDE.md's progress log for why.
+# vars the backend service needs and CLAUDE.md's progress log for why.
 services:
+  - type: web
+    name: portfolio-frontend
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_API_URL # the backend service's URL, e.g. https://portfolio-collab-api.onrender.com
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL # this frontend's own deployed URL/custom domain
+        sync: false
+
   - type: web
     name: portfolio-collab-api
     runtime: docker
