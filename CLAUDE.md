@@ -529,6 +529,48 @@ no component edits needed.
     up — currently live on the `*.onrender.com` URLs above. Also worth
     deleting the test inquiry row from Neon (routine local hygiene, not
     urgent).
+- **2026-09-22** — User reported the frontend showing Render's
+  "spinning up"/waking-up page on cold visits — expected behavior for
+  Render's free web-service plan (spins down after ~15 min idle, ~30-60s
+  cold start), not a code bug. Decided to move the frontend to Vercel
+  (free tier, no spin-down for Next.js — serverless/edge, not a
+  persistent container like Render's) and keep the FastAPI backend on
+  Render since Vercel doesn't host that well. Removed the
+  `portfolio-frontend` service block from `render.yaml` (backend-only
+  Blueprint now) since Render no longer hosts the frontend going
+  forward.
+  - User imported `AyushM03/Portfolio` into Vercel. Deployed URL:
+    `https://myportfolio-phi-amber-83.vercel.app` (Vercel's stable
+    production domain for this project — not a per-deployment hash URL,
+    safe to reference long-term). Set `NEXT_PUBLIC_API_URL` =
+    `https://portfolio-collab-api-aplx.onrender.com` and
+    `NEXT_PUBLIC_SITE_URL` = `https://myportfolio-phi-amber-83.vercel.app`
+    as **Config**-type (not Sensitive) env vars on Vercel — correct
+    choice since neither value is a secret; kept the `NEXT_PUBLIC_`
+    prefix on both despite Vercel's public-exposure warning, since both
+    are read client-side (`CollabForm.tsx`'s `fetch()` and
+    `layout.tsx`'s `metadataBase`) and need to be in the browser bundle.
+  - **Bug**: first attempt at wiring `NEXT_PUBLIC_SITE_URL` almost
+    reused the API URL by mistake — worth flagging next time these two
+    vars get set on a new host: `NEXT_PUBLIC_API_URL` is where the
+    frontend sends requests *to* (the backend), `NEXT_PUBLIC_SITE_URL`
+    is the frontend's *own* address. Easy to conflate when copy-pasting
+    both into a new platform's env var UI back to back.
+  - **Bug**: CORS preflight failed (`No 'Access-Control-Allow-Origin'
+    header`) on first submit from the new Vercel origin — same failure
+    mode as the 09-21 Render migration, same fix: updated
+    `ALLOWED_ORIGINS` on `portfolio-collab-api-aplx` (Render) to the
+    exact Vercel origin `https://myportfolio-phi-amber-83.vercel.app`
+    (no trailing slash — FastAPI's `CORSMiddleware` does exact string
+    matching).
+  - **Verified for real**: user confirmed the frontend loads instantly
+    on the Vercel URL (no more Render cold-start page) and the Collab
+    form submits successfully end-to-end.
+  - **Still open**: re-pointing the `www.ayushmeshram.dev` CNAME from
+    Render to Vercel (still live on the raw `*.onrender.com` URL and the
+    new raw `*.vercel.app` URL, custom domain not yet moved), and
+    deleting the now-unused `portfolio-frontend-aplx` Render service
+    once the custom domain move is confirmed working.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
