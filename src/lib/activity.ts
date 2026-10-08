@@ -16,7 +16,9 @@ const GITHUB_USERNAME = "AyushM03";
 const LEETCODE_USERNAME = "AyushMM03";
 const CODEFORCES_HANDLE = "ayushm03";
 
-const REVALIDATE_SECONDS = 3600;
+// 10 min, not 1 h: an hourly cache left the current day's submissions
+// missing from the heatmap for most of the day they happened.
+const REVALIDATE_SECONDS = 600;
 const WEEKS = 53;
 
 async function safeFetchJson(

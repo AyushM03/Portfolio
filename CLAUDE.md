@@ -566,11 +566,28 @@ no component edits needed.
   - **Verified for real**: user confirmed the frontend loads instantly
     on the Vercel URL (no more Render cold-start page) and the Collab
     form submits successfully end-to-end.
+  - User deleted the now-unused `portfolio-frontend-aplx` Render
+    service. Render only hosts `portfolio-collab-api-aplx` (the
+    backend) now, matching the trimmed `render.yaml` Blueprint.
   - **Still open**: re-pointing the `www.ayushmeshram.dev` CNAME from
-    Render to Vercel (still live on the raw `*.onrender.com` URL and the
-    new raw `*.vercel.app` URL, custom domain not yet moved), and
-    deleting the now-unused `portfolio-frontend-aplx` Render service
-    once the custom domain move is confirmed working.
+    Render to Vercel — currently live only on the raw
+    `*.vercel.app` URL, custom domain not yet moved.
+- **2026-10-08** — User reported daily GitHub/LeetCode activity "not
+  showing green" on the heatmap. Investigated against live sources: the
+  fetch pipeline is fine (deployed `/api/activity` matches GitHub +
+  LeetCode through 10-07). The real gap was **staleness**: the page is ISR
+  with `revalidate: 3600`, so the live HTML (Vercel `Age: ~35 min` at
+  check time) still showed 10-08 as 0 while LeetCode already reported 1
+  submission that day. Lowered `REVALIDATE_SECONDS` in `src/lib/activity.ts`
+  and `revalidate` in `src/app/api/activity/route.ts` from 3600 to 600 (build
+  now reports `/` and `/api/activity` at 10m). Remaining inherent lag: the
+  `jogruber` GitHub wrapper has its own cache, and GitHub only counts
+  commits on a repo's default branch made with an email linked to the
+  account. Days are bucketed in **UTC** (LeetCode's own calendar is UTC
+  keyed), so IST activity between 00:00 and 05:30 lands on the previous
+  day, which matches LeetCode's own profile. Note: don't edit source files
+  with PowerShell `Set-Content -Encoding utf8` (PS 5.1 adds a BOM and
+  mangles the `—` characters); use the Edit tool.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
