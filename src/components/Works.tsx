@@ -10,14 +10,9 @@ export default function Works() {
             Works
           </h2>
           <p className="max-w-md text-foreground/60">
-            No deployable project yet — these are demo builds standing in
-            until{" "}
-            <span className="font-medium text-foreground">
-              Agent Action Firewall
-            </span>{" "}
-            and{" "}
-            <span className="font-medium text-foreground">SymptMeal</span>{" "}
-            are ready to take their place.
+            Systems I&apos;ve built and shipped.{" "}
+            <span className="font-medium text-foreground">SymptMeal</span> is
+            next in line.
           </p>
         </div>
 

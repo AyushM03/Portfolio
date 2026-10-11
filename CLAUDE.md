@@ -588,6 +588,23 @@ no component edits needed.
   day, which matches LeetCode's own profile. Note: don't edit source files
   with PowerShell `Set-Content -Encoding utf8` (PS 5.1 adds a BOM and
   mangles the `—` characters); use the Edit tool.
+- **2026-10-11** — User finished **Agent Action Firewall** (all 9 phases,
+  deployed: dashboard `https://agent-action-firewall.vercel.app`, API on
+  Render, repo `github.com/AyushM03/agent-action-firewall`). Started PRD
+  Phase 3: it replaces the **TaskFlow API** demo in `src/data/projects.ts`
+  (`isDemo: false`; description from its README). QuickLink demo stays in
+  the second slot until SymptMeal ships.
+  - `Project` type gained an optional `repo` field. `ProjectCard` is now an
+    `<article>` with a stretched-link title (`after:absolute after:inset-0`)
+    so the whole card still opens `href`, plus a `relative z-10` GitHub
+    "Source" link when `repo` is set (avoids invalid nested `<a>`).
+    External `href`s open in a new tab.
+  - `Works.tsx` intro copy no longer says "no deployable project yet".
+  - Card thumbnail is still the generic gradient + `Code` icon; a real
+    screenshot of the firewall dashboard is the obvious next upgrade.
+  - `npm run lint` and `npm run build` pass; checked served HTML on
+    `next start` for the new card, repo link, and that TaskFlow is gone.
+    Not committed or pushed yet.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
