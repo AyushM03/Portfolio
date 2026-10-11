@@ -604,7 +604,8 @@ no component edits needed.
     screenshot of the firewall dashboard is the obvious next upgrade.
   - `npm run lint` and `npm run build` pass; checked served HTML on
     `next start` for the new card, repo link, and that TaskFlow is gone.
-    Not committed or pushed yet.
+    Pushed to `main` (`cb4f3ac`); Vercel redeployed in ~30s and the live
+    site shows the card + repo link, no TaskFlow.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
