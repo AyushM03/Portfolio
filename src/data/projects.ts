@@ -21,11 +21,12 @@ export const projects: Project[] = [
     isDemo: false,
   },
   {
-    title: "QuickLink",
+    title: "Court Case Prediction",
     description:
       "URL-shortener service with click analytics and a rate-limited public API.",
-    stack: ["Node.js", "Express", "MongoDB"],
-    href: "#",
-    isDemo: true,
+    stack: ["Python", "FastAPI", "Data and ML ecosystem", "scikit-survival", "SHAP / XGBoost" , "Docker , Render"],
+    href: "https://court-delay.onrender.com",
+    repo: "https://github.com/AyushM03/court-case-predictipon",
+    isDemo: false,
   },
 ];
