@@ -23,7 +23,7 @@ export const projects: Project[] = [
   {
     title: "Court Case Prediction",
     description:
-      "URL-shortener service with click analytics and a rate-limited public API.",
+      "Survival-analysis model of how long cases take in Maharashtra's district courts — Kaplan-Meier, Cox PH and gradient-boosted survival models on the e-Courts dataset, handling still-pending (right-censored) cases correctly, with SHAP explanations and a live FastAPI app.",
     stack: ["Python", "FastAPI", "Data and ML ecosystem", "scikit-survival", "SHAP / XGBoost" , "Docker , Render"],
     href: "https://court-delay.onrender.com",
     repo: "https://github.com/AyushM03/court-case-predictipon",
